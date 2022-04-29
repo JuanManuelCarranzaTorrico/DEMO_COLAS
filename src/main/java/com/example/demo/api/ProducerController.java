@@ -81,5 +81,12 @@ public class ProducerController {
         return new ResponseEntity<>(teacherList, HttpStatus.OK);
 }
 // Get Subject
-
+@RequestMapping(method = RequestMethod.GET, value = "/v1/api/Subject")
+public ResponseEntity<List<Subject>> getSubjects1() {
+    List<Subject> subjectList = subjectBl.getSubjects();
+    for(int i=0;i<subjectList.size();i++){
+        template.convertAndSend(RabbitMqConfig.SU_EXCHANGE, RabbitMqConfig.SU_ROUTING_KEY, subjectList.get(i));
+    }
+    return new ResponseEntity<>(subjectList, HttpStatus.OK);
+}
 }
