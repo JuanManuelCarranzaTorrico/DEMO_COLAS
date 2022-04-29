@@ -6,6 +6,10 @@ import com.example.demo.dto.*;
 import com.example.demo.dto.StudentDto;
 import com.example.demo.entity.Student;
 import com.example.demo.bl.StudentBl;
+import com.example.demo.bl.TeacherBl;
+import com.example.demo.bl.SubjectBl;
+import com.example.demo.entity.Subject;
+import com.example.demo.entity.Teacher;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,10 @@ public class ProducerController {
     private StudentBl studentBl;
     @Autowired
     private RabbitTemplate template;
+    @Autowired
+    private TeacherBl teacherBl;
+    @Autowired
+    private SubjectBl subjectBl;
 
 //    @PostMapping("/v1/api/consumer")
     @RequestMapping(method = RequestMethod.POST, value = "/v1/api/producer")
@@ -63,4 +71,15 @@ public class ProducerController {
 
     return new ResponseEntity<>(studentList, HttpStatus.OK);
 }
+// Get Profesores
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<List<Teacher>> getSubjects() {
+        List<Teacher> teacherList = teacherBl.getTeachers();
+        for(int i=0; i<teacherList.size();i++){
+            template.convertAndSend(RabbitMqConfig.T_EXCHANGE, RabbitMqConfig.T_ROUTING_KEY, teacherList.get(i));
+        }
+        return new ResponseEntity<>(teacherList, HttpStatus.OK);
+}
+// Get Subject
+
 }
